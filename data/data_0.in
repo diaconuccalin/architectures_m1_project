@@ -1,12 +1,12 @@
 5 10
-s t x y z
-s t 6
-s y 6
-t x 5
-t y 8
-t z -4
-x t -2
-y x -3
-y z 9
-z s 2
-z x 7
+ssss tttt xxxx yyyy zzzz
+ssss tttt 6
+ssss yyyy 6
+tttt xxxx 5
+tttt yyyy 8
+tttt zzzz -4
+xxxx tttt -2
+yyyy xxxx -3
+yyyy zzzz 9
+zzzz ssss 2
+zzzz xxxx 7

@@ -3,4 +3,6 @@ project(architectures_m1_project C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(architectures_m1_project main.c)
+add_executable(architectures_m1_project main.c
+        src/graph_structs.h
+)
