@@ -6,12 +6,12 @@
 #define ARCHITECTURES_M1_PROJECT_GRAPH_STRUCTS_H
 
 typedef struct{
-    char name[4];
+    char *name;
 } node;
 
 typedef struct{
-    node source;
-    node destination;
+    node *source;
+    node *destination;
     int weight;
 } edge;
 
