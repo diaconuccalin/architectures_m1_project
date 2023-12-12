@@ -1,12 +1,20 @@
 #include <stdio.h>
+#include <stdbool.h>
 #include "src/graph_structs.h"
 #include "src/graph_file_reader.h"
+#include "src/bellman_ford.h"
 
 int main() {
-    graph *result = graph_file_reader("..\\data\\data_0.in");
+    graph *g = graph_file_reader("..\\data\\data_0.in");
+    bool result = bellman_ford(g, &g->nodes[0]);
 
-    for (int i = 0; i < result->m; i++) {
-        printf("%s %s %d\n", result->edges[i].source->name, result->edges[i].destination->name, result->edges[i].weight);
+    if (result) {
+        for (int i = 0; i < g->n; i++) {
+            node *current_node = &g->nodes[i];
+            printf("Vertex %s: previous %s value %d\n", current_node->name, current_node->pi, current_node->d);
+        }
+    } else {
+        printf("Reachable negative cycle found.\n");
     }
 
     return 0;

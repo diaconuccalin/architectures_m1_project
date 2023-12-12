@@ -7,6 +7,8 @@
 
 typedef struct{
     char *name;
+    int d;
+    char *pi;
 } node;
 
 typedef struct{
