@@ -38,9 +38,9 @@ char *read_node_name(const char *p) {
     char *node_name = malloc(5 * sizeof(char));
 
     for (int j = 0; j < 4; j++) {
-        *(node_name + j) = *(p + j);
+        node_name[j] = p[j];
     }
-    *(node_name + 4) = '\0';
+    node_name[4] = '\0';
 
     return node_name;
 }
@@ -73,15 +73,12 @@ graph *text_to_graph(char *text) {
     }
 
     node *nodes = malloc(n * sizeof(node));
-    node *current_node = nodes;
     for (int i = 0; i < n; i++) {
-        current_node->name = read_node_name(p);
-        current_node += sizeof(node);
+        nodes[i].name = read_node_name(p);
         p += 5;
     }
 
     edge *edges = malloc(m * sizeof(edge));
-    edge *current_edge = edges;
     for (int i = 0; i < m; i++) {
         // Read source name
         char *source_name = read_node_name(p);
@@ -91,7 +88,7 @@ graph *text_to_graph(char *text) {
 
         // Read destination name
         char *dest_name = read_node_name(p);
-        node *destination =  find_node_by_name(dest_name, nodes, n);
+        node *destination = find_node_by_name(dest_name, nodes, n);
         free(dest_name);
         p += 5;
 
@@ -107,15 +104,10 @@ graph *text_to_graph(char *text) {
         }
 
         // Store
-        current_edge->source = source;
-        current_edge->destination = destination;
-        current_edge->weight = weight;
-        current_edge += sizeof(edge);
+        edges[i].source = source;
+        edges[i].destination = destination;
+        edges[i].weight = weight;
     }
-
-    free(p);
-    free(current_node);
-    free(current_edge);
 
     to_return->n = n;
     to_return->m = m;
@@ -126,6 +118,14 @@ graph *text_to_graph(char *text) {
 }
 
 graph *graph_file_reader(char *fileName) {
+    // Read file content
     char *text = file_reader(fileName);
-    return text_to_graph(text);
+
+    // Generate graph
+    graph *to_return = text_to_graph(text);
+
+    // Free memory used to store file content
+    free(text);
+
+    return to_return;
 }
