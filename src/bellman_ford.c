@@ -35,6 +35,8 @@ bool bellman_ford(graph *G, node *s) {
 
     for (int i = 1; i < G->n; i++) {
         for (int j = 0; j < G->m; j++) {
+            if (G->edges[j].source->d == INT_MAX)
+                continue;
             relax(&G->edges[j]);
         }
     }
