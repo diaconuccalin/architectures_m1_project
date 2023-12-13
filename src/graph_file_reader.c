@@ -2,36 +2,8 @@
 // Created by diaco on 06/12/2023.
 //
 
-#include <malloc.h>
-#include <ctype.h>
+
 #include "graph_file_reader.h"
-#include "graph_structs.h"
-#include "stdio.h"
-#include "utils.h"
-
-// Simple file reader that returns a char containing the entire text in the file
-char *file_reader(char *fileName) {
-    FILE *file = fopen(fileName, "r");
-    char *code;
-    size_t n = 0;
-    int c;
-
-    if (file == NULL)
-        return NULL;
-
-    fseek(file, 0, SEEK_END);
-    long f_size = ftell(file);
-    fseek(file, 0, SEEK_SET);
-    code = malloc(f_size);
-
-    while ((c = fgetc(file)) != EOF) {
-        code[n++] = (char) c;
-    }
-
-    code[n] = '\0';
-
-    return code;
-}
 
 
 char *read_node_name(const char *p) {
@@ -95,7 +67,7 @@ graph *text_to_graph(char *text) {
         // Read weight
         int weight;
         while (*p) {
-            if ( isdigit(*p) || ( (*p=='-'||*p=='+') && isdigit(*(p+1)) )) {
+            if (isdigit(*p) || ((*p == '-' || *p == '+') && isdigit(*(p + 1)))) {
                 weight = strtol(p, &p, 10);
             } else {
                 p++;
@@ -116,6 +88,7 @@ graph *text_to_graph(char *text) {
 
     return to_return;
 }
+
 
 graph *graph_file_reader(char *fileName) {
     // Read file content

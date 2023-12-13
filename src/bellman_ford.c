@@ -3,9 +3,7 @@
 // Implementation from Introduction to Algorithms, Cormen et al.
 //
 
-#include <stdbool.h>
-#include <limits.h>
-#include <stddef.h>
+
 #include "bellman_ford.h"
 
 
@@ -19,7 +17,7 @@ void initialize_single_source(graph *G, node *s) {
 }
 
 
-void relax(edge *e){
+void relax(edge *e) {
     node *u = e->source;
     node *v = e->destination;
 

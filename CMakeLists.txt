@@ -11,4 +11,6 @@ add_executable(architectures_m1_project main.c
         src/utils.h
         src/bellman_ford.c
         src/bellman_ford.h
+        src/tester.c
+        src/tester.h
 )
