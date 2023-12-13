@@ -1,0 +1,12 @@
+5 10
+ssss tttt xxxx yyyy zzzz
+ssss tttt 6
+ssss yyyy 7
+tttt xxxx 5
+tttt yyyy 8
+tttt zzzz -4
+xxxx tttt -2
+yyyy xxxx -3
+yyyy zzzz 9
+zzzz ssss 2
+zzzz xxxx 7
