@@ -3,7 +3,7 @@ project(architectures_m1_project C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(architectures_m1_project main.c
+add_executable(architectures_m1_project main_openmp.c
         src/graph_structs.h
         src/graph_file_reader.c
         src/graph_file_reader.h
