@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.26)
-project(architectures_m1_project C)
+cmake_minimum_required(VERSION 3.22)
+project(architectures_m1_project C CUDA)
 
 set(CMAKE_C_STANDARD 11)
 
@@ -13,4 +13,5 @@ add_executable(architectures_m1_project main_openmp.c
         src/bellman_ford.h
         src/tester.c
         src/tester.h
+        main_cuda.cu
 )

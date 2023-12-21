@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "src/tester.h"
 
-int main() {
+int main_openmp() {
     if (tester()) {
         printf("\nCongrats! All tests passed!\n");
     } else {
