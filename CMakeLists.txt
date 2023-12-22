@@ -3,7 +3,7 @@ project(architectures_m1_project C CUDA)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(architectures_m1_project main_openmp.c
+add_executable(architectures_m1_project main.c
         src/graph_structs.h
         src/graph_file_reader.c
         src/graph_file_reader.h
@@ -13,5 +13,6 @@ add_executable(architectures_m1_project main_openmp.c
         src/bellman_ford.h
         src/tester.c
         src/tester.h
-        main_cuda.cu
+        src/cu_bellman_ford.cuh
+        src/cu_bellman_ford.cu
 )

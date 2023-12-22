@@ -6,7 +6,7 @@
 #include "tester.h"
 
 
-bool tester() {
+bool tester(bool cuda) {
     // Prepare directory and file variables
     char dir_in[] = "../data/infoarena_processed";
     char dir_ok[] = "../data/infoarena";
@@ -33,7 +33,12 @@ bool tester() {
 
         // Read graph and perform bellman_ford
         graph *g = graph_file_reader(file_path_in);
-        bool result = bellman_ford(g, &g->nodes[0]);
+        bool result;
+
+        if (cuda)
+            cu_bellman_ford(g, &g->nodes[0]);
+        else
+            bellman_ford(g, &g->nodes[0]);
 
         // Read ok file
         char file_path_ok[100];

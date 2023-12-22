@@ -12,7 +12,8 @@
 #include "utils.h"
 #include "graph_file_reader.h"
 #include "bellman_ford.h"
+#include "cu_bellman_ford.cuh"
 
-bool tester();
+bool tester(bool cuda);
 
 #endif //ARCHITECTURES_M1_PROJECT_TESTER_H
