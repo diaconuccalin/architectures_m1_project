@@ -6,6 +6,7 @@
 #define ARCHITECTURES_M1_PROJECT_CU_BELLMAN_FORD_CUH
 
 #include "graph_structs.h"
+#include "utils.h"
 
 bool cu_bellman_ford(graph *G, node *s);
 

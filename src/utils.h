@@ -11,6 +11,7 @@
 #include "graph_structs.h"
 
 node *find_node_by_name(char *node_name, node *node_list, int list_len);
+int find_node_id_by_name(char *node_name, node *node_list, int list_len);
 int EndsWith(const char *str, const char *suffix);
 char *file_reader(char *fileName);
 
