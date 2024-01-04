@@ -15,4 +15,6 @@ add_executable(architectures_m1_project main.c
         src/tester.h
         src/cu_bellman_ford.cuh
         src/cu_bellman_ford.cu
+        src/timing.c
+        src/timing.h
 )

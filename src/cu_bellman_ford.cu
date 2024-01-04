@@ -45,6 +45,7 @@ __global__ void cu_relax(
 extern "C"
 bool cu_bellman_ford(graph *G, node *s) {
     cu_initialize_single_source(G, s);
+    double start_time = get_time();
 
     // Size information
     int *d_n, *d_m;
@@ -95,10 +96,14 @@ bool cu_bellman_ford(graph *G, node *s) {
 
     cudaDeviceSynchronize();
 
+    double end_time = get_time();
+    printf("Memory allocation time: %fs.\n", end_time - start_time);
+
     // Processing
     int grid_dim = int(sqrt(G->m));
     int block_dim = (G->m / grid_dim + 1);
 
+    start_time = get_time();
     for (int i = 1; i < G->n; i++) {
         cu_relax<<<grid_dim, block_dim>>>(
                 d_m,
@@ -110,9 +115,12 @@ bool cu_bellman_ford(graph *G, node *s) {
         );
         cudaDeviceSynchronize();
     }
+    end_time = get_time();
+    printf("CUDA execution time: %fs.\n", end_time - start_time);
 
     cudaMemcpy(nodes_ds, d_nodes_ds, G->n * sizeof(int), cudaMemcpyDeviceToHost);
     cudaMemcpy(nodes_pis, d_nodes_pis, G->n * sizeof(int), cudaMemcpyDeviceToHost);
+    cudaDeviceSynchronize();
 
     for (int i = 0; i < G->n; i++) {
         G->nodes[i].d = nodes_ds[i];
