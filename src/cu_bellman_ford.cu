@@ -3,7 +3,6 @@
 //
 
 #include <cstdio>
-#include <ctime>
 
 extern "C" {
 #include "cu_bellman_ford.cuh"
@@ -20,30 +19,26 @@ void cu_initialize_single_source(graph *G, node *s) {
 }
 
 
-__global__ void cu_relax(graph *G) {
+__global__ void cu_relax(
+        int *m,
+        int *nodes_ds,
+        int *nodes_pis,
+        int *edges_sources,
+        int *edges_destinations,
+        int *edges_weights) {
     int index = threadIdx.x + blockIdx.x * blockDim.x;
 
-    if (index < G->m) {
-        edge *e = &G->edges[index];
+    if (index < *m) {
+        int source_index = edges_sources[index];
+        int destination_index = edges_destinations[index];
 
-        if (e->source->d < INT_MAX) {
-            node *u = e->source;
-            node *v = e->destination;
-
-            if (v->d > (u->d + e->weight)) {
-                v->d = u->d + e->weight;
-                v->pi = u->name;
+        if (nodes_ds[source_index] < INT_MAX) {
+            if (nodes_ds[destination_index] > (nodes_ds[source_index] + edges_weights[index])) {
+                nodes_ds[destination_index] = nodes_ds[source_index] + edges_weights[index];
+                nodes_pis[destination_index] = source_index;
             }
         }
     }
-}
-
-
-double gettime2()
-{
-    struct timespec ts;
-    clock_gettime(CLOCK_MONOTONIC, &ts );
-    return (ts.tv_sec + (double)ts.tv_nsec / 1e9);
 }
 
 
@@ -51,69 +46,93 @@ extern "C"
 bool cu_bellman_ford(graph *G, node *s) {
     cu_initialize_single_source(G, s);
 
-    graph *d_G;
+    // Size information
+    int *d_n, *d_m;
 
-    double start, end;
-    start = gettime2();
+    cudaMalloc((void **) &d_n, sizeof(int));
+    cudaMalloc((void **) &d_m, sizeof(int));
 
-    graph *d_G;
-    node *d_nodes;
-    edge *d_edges;
+    cudaMemcpy(d_n, &G->n, sizeof(int), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_m, &G->m, sizeof(int), cudaMemcpyHostToDevice);
 
-    // Graph
-    cudaMalloc((void **) &d_G, sizeof(graph));
-    cudaMemcpy(d_G, G, sizeof(graph), cudaMemcpyHostToDevice);
+    // Nodes information
+    int *nodes_ds, *nodes_pis;
+    int *d_nodes_ds, *d_nodes_pis;
 
-    // Nodes
-    cudaMalloc((void**)&d_nodes, G->n * sizeof(node));
+    cudaMalloc((void **) &d_nodes_ds, G->n * sizeof(int));
+    cudaMalloc((void **) &d_nodes_pis, G->n * sizeof(int));
+
+    nodes_ds = (int *) malloc(G->n * sizeof(int));
+    nodes_pis = (int *) malloc(G->n * sizeof(int));
     for (int i = 0; i < G->n; i++) {
-        // Name
-        char *d_node_name;
-        cudaMalloc((void **) &d_node_name, 5 * sizeof(char));
-        cudaMemcpy(d_node_name, G->nodes[i].name, 5 * sizeof(char), cudaMemcpyHostToDevice);
-
-        // Node
-        cudaMemcpy(&d_nodes[i], &G->nodes[i], sizeof(node), cudaMemcpyHostToDevice);
-        cudaMemcpy(&d_nodes[i].name, &d_node_name, sizeof(char*), cudaMemcpyHostToDevice);
+        nodes_ds[i] = G->nodes[i].d;
+        nodes_pis[i] = -1;
     }
-    cudaMemcpy(&d_G->nodes, &d_nodes, sizeof(node*), cudaMemcpyHostToDevice);
 
-    // Edges
-    cudaMalloc((void**)&d_edges, G->m * sizeof (edge));
+    cudaMemcpy(d_nodes_ds, nodes_ds, G->n * sizeof(int), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_nodes_pis, nodes_pis, G->n * sizeof(int), cudaMemcpyHostToDevice);
+
+    // Edges information
+    int *edges_sources, *edges_destinations, *edges_weights;
+    int *d_edges_sources, *d_edges_destinations, *d_edges_weights;
+
+    cudaMalloc((void **) &d_edges_sources, G->m * sizeof(int));
+    cudaMalloc((void **) &d_edges_destinations, G->m * sizeof(int));
+    cudaMalloc((void **) &d_edges_weights, G->m * sizeof(int));
+
+    edges_sources = (int *) malloc(G->m * sizeof(int));
+    edges_destinations = (int *) malloc(G->m * sizeof(int));
+    edges_weights = (int *) malloc(G->m * sizeof(int));
     for (int i = 0; i < G->m; i++) {
-        int source_index = find_node_id_by_name(G->edges[i].source->name, G->nodes, G->m);
-        int destination_index = find_node_id_by_name(G->edges[i].destination->name, G->nodes, G->m);
-
-        // Source
-        node *d_source_node;
-        cudaMalloc((void **) &d_source_node, sizeof(node));
-        cudaMemcpy(d_source_node, &(d_nodes[source_index]), sizeof(node), cudaMemcpyHostToDevice);
-
-        // Destination
-        node *d_destination_node;
-        cudaMalloc((void **) &d_destination_node, sizeof(node));
-        cudaMemcpy(d_destination_node, &(d_nodes[destination_index]), sizeof(node), cudaMemcpyHostToDevice);
-
-        // Edge
-        cudaMemcpy(&d_edges[i], &G->edges[i], sizeof(edge), cudaMemcpyHostToDevice);
-        cudaMemcpy(&d_edges[i].source, &d_source_node, sizeof(node*), cudaMemcpyHostToDevice);
-        cudaMemcpy(&d_edges[i].destination, &d_destination_node, sizeof(node*), cudaMemcpyHostToDevice);
+        edges_sources[i] = find_node_id_by_name(G->edges[i].source->name, G->nodes, G->m);
+        edges_destinations[i] = find_node_id_by_name(G->edges[i].destination->name, G->nodes, G->m);
+        edges_weights[i] = G->edges[i].weight;
     }
-    cudaMemcpy(&d_G->edges, &d_edges, sizeof(edge*), cudaMemcpyHostToDevice);
+
+    cudaMemcpy(d_edges_sources, edges_sources, G->m * sizeof(int), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_edges_destinations, edges_destinations, G->m * sizeof(int), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_edges_weights, edges_weights, G->m * sizeof(int), cudaMemcpyHostToDevice);
 
     cudaDeviceSynchronize();
-    end = gettime2();
-    printf("Alloc & copy time: %f\n", end - start);
 
+    // Processing
     int grid_dim = int(sqrt(G->m));
     int block_dim = (G->m / grid_dim + 1);
 
-    start = gettime2();
     for (int i = 1; i < G->n; i++) {
-        cu_relax<<<grid_dim, block_dim>>>(d_G);
+        cu_relax<<<grid_dim, block_dim>>>(
+                d_m,
+                d_nodes_ds,
+                d_nodes_pis,
+                d_edges_sources,
+                d_edges_destinations,
+                d_edges_weights
+        );
+        cudaDeviceSynchronize();
     }
-    end = gettime2();
-    printf("Actual exe time: %f\n", end - start);
+
+    cudaMemcpy(nodes_ds, d_nodes_ds, G->n * sizeof(int), cudaMemcpyDeviceToHost);
+    cudaMemcpy(nodes_pis, d_nodes_pis, G->n * sizeof(int), cudaMemcpyDeviceToHost);
+
+    for (int i = 0; i < G->n; i++) {
+        G->nodes[i].d = nodes_ds[i];
+        G->nodes[i].pi = G->nodes[nodes_pis[i]].name;
+    }
+
+    cudaFree(d_n);
+    cudaFree(d_m);
+    cudaFree(d_nodes_ds);
+    cudaFree(d_nodes_pis);
+    cudaFree(d_edges_sources);
+    cudaFree(d_edges_destinations);
+    cudaFree(d_edges_weights);
+    cudaDeviceSynchronize();
+
+    free(nodes_ds);
+    free(nodes_pis);
+    free(edges_sources);
+    free(edges_destinations);
+    free(edges_weights);
 
     for (int i = 0; i < G->m; i++) {
         edge *current_edge = &G->edges[i];
@@ -123,10 +142,6 @@ bool cu_bellman_ford(graph *G, node *s) {
         if (v->d > (u->d + current_edge->weight))
             return false;
     }
-
-    cudaMemcpy(&G, d_G, sizeof(graph), cudaMemcpyDeviceToHost);
-    cudaFree(d_G);
-    free(G);
 
     return true;
 }

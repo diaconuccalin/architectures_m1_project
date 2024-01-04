@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include "src/tester.h"
 
-int main_openmp() {
-    if (tester()) {
+
 int main() {
     bool cuda = true;
     if (tester(cuda)) {
