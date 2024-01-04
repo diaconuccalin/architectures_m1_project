@@ -43,7 +43,7 @@ bool tester() {
 
         // TODO: Time evaluation
         finish = omp_get_wtime();
-        printf("Elapsed time = %e seconds\n", finish - start);
+        printf("Elapsed time: %.6f seconds\n", finish - start);
 
         // Read ok file
         char file_path_ok[100];
