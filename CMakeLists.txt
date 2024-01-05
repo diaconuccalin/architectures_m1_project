@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-
-project(architectures_m1_project LANGUAGES C)
+project(architectures_m1_project C CUDA)
 
 set(CMAKE_C_STANDARD 11)
 
@@ -16,6 +15,10 @@ add_executable(architectures_m1_project main.c
         src/bellman_ford.h
         src/tester.c
         src/tester.h
+        src/cu_bellman_ford.cuh
+        src/cu_bellman_ford.cu
+        src/timing.c
+        src/timing.h
 )
 
 target_link_libraries(architectures_m1_project PRIVATE OpenMP::OpenMP_C)

@@ -4,10 +4,12 @@
 
 
 int main() {
+    bool cuda = true;
+  
     // TODO: Evaluate multiple values
-    omp_set_num_threads(4);
-
-    if (tester()) {
+    if (!cuda) omp_set_num_threads(4);
+  
+    if (tester(cuda)) {
         printf("\nCongrats! All tests passed!\n");
     } else {
         printf("\nOne or more tests failed!\n");
