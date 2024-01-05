@@ -8,8 +8,8 @@
 
 bool tester() {
     // Prepare directory and file variables
-    char dir_in[] = "/home/calind/parallel_bellman_ford/data/infoarena_processed";
-    char dir_ok[] = "/home/calind/parallel_bellman_ford/data/infoarena";
+    char dir_in[] = "/home/students/calin.diaconu/parallel_bellman_ford/data/infoarena_processed";
+    char dir_ok[] = "/home/students/calin.diaconu/parallel_bellman_ford/data/infoarena";
 
     DIR *dfd_in;
     struct dirent *dp;
