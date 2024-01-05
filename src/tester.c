@@ -8,12 +8,12 @@
 
 bool tester(bool cuda) {
     // Prepare directory and file variables
-    char dir_in[] = "../data/infoarena_processed";
-    char dir_ok[] = "../data/infoarena";
+    char dir_in[] = "/home/calind/parallel_bellman_ford/data/infoarena_processed";
+    char dir_ok[] = "/home/calind/parallel_bellman_ford/data/infoarena";
 
     DIR *dfd_in;
     struct dirent *dp;
-    char file_path_in[100];
+    char file_path_in[500];
 
     bool all_tests = true;
     bool current_test = true;
