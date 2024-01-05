@@ -8,12 +8,12 @@
 
 bool tester() {
     // Prepare directory and file variables
-    char dir_in[] = "../data/infoarena_processed";
-    char dir_ok[] = "../data/infoarena";
+    char dir_in[] = "/home/students/calin.diaconu/parallel_bellman_ford/data/infoarena_processed";
+    char dir_ok[] = "/home/students/calin.diaconu/parallel_bellman_ford/data/infoarena";
 
     DIR *dfd_in;
     struct dirent *dp;
-    char file_path_in[100];
+    char file_path_in[500];
 
     bool all_tests = true;
     bool current_test = true;
@@ -31,9 +31,19 @@ bool tester() {
         // Skip files that can't be opened
         if (stat(file_path_in, &stbuf) == -1) continue;
 
-        // Read graph and perform bellman_ford
+        // Read graph
         graph *g = graph_file_reader(file_path_in);
+
+        // TODO: Time evaluation
+        double start, finish;
+        start = omp_get_wtime();
+
+        // Perform Bellman-Ford
         bool result = bellman_ford(g, &g->nodes[0]);
+
+        // TODO: Time evaluation
+        finish = omp_get_wtime();
+        printf("Elapsed time: %.6f seconds\n", finish - start);
 
         // Read ok file
         char file_path_ok[100];
@@ -57,7 +67,7 @@ bool tester() {
             for (int i = 1; i < g->n; i++) {
                 int val = 0;
 
-                // Solve the negative number situation
+                // Check for negative numbers
                 bool negative = false;
 
                 if (ok_file_content[current_char] == '-') {
