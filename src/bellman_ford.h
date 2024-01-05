@@ -6,8 +6,9 @@
 #define ARCHITECTURES_M1_PROJECT_BELLMAN_FORD_H
 
 #include "graph_structs.h"
-#include <stdbool.h>
 #include <limits.h>
+#include <omp.h>
+#include <stdbool.h>
 #include <stddef.h>
 
 bool bellman_ford(graph *G, node *s);

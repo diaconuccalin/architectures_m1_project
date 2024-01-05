@@ -31,14 +31,23 @@ bool tester(bool cuda) {
         // Skip files that can't be opened
         if (stat(file_path_in, &stbuf) == -1) continue;
 
-        // Read graph and perform bellman_ford
+        // Read graph
         graph *g = graph_file_reader(file_path_in);
-        bool result;
 
+        bool result;
         if (cuda)
-            cu_bellman_ford(g, &g->nodes[0]);
-        else
-            bellman_ford(g, &g->nodes[0]);
+            result = cu_bellman_ford(g, &g->nodes[0]);
+        else {
+            // TODO: Time evaluation
+            double start, finish;
+      
+            start = omp_get_wtime();
+            result = bellman_ford(g, &g->nodes[0]);
+      
+            // TODO: Time evaluation
+            finish = omp_get_wtime();
+            printf("Elapsed time: %.6f seconds\n", finish - start);
+        }
 
         // Read ok file
         char file_path_ok[500];
@@ -62,7 +71,7 @@ bool tester(bool cuda) {
             for (int i = 1; i < g->n; i++) {
                 int val = 0;
 
-                // Solve the negative number situation
+                // Check for negative numbers
                 bool negative = false;
 
                 if (ok_file_content[current_char] == '-') {
