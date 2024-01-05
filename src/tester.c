@@ -8,8 +8,8 @@
 
 bool tester(bool cuda) {
     // Prepare directory and file variables
-    char dir_in[] = "/home/calind/parallel_bellman_ford/data/infoarena_processed";
-    char dir_ok[] = "/home/calind/parallel_bellman_ford/data/infoarena";
+    char dir_in[] = "/home/students/calin.diaconu/parallel_bellman_ford/data/infoarena_processed";
+    char dir_ok[] = "/home/students/calin.diaconu/parallel_bellman_ford/data/infoarena";
 
     DIR *dfd_in;
     struct dirent *dp;
@@ -41,7 +41,7 @@ bool tester(bool cuda) {
             bellman_ford(g, &g->nodes[0]);
 
         // Read ok file
-        char file_path_ok[100];
+        char file_path_ok[500];
         char *file_name = strrchr(file_path_in, '/');
         file_name[strlen(file_name) - 3] = '\0';
         sprintf(file_path_ok, "%s%s.ok", dir_ok, file_name);
