@@ -14,6 +14,6 @@
 #include "bellman_ford.h"
 #include "cu_bellman_ford.cuh"
 
-bool tester(bool cuda);
+bool tester(bool cuda, char* dir_in, char* dir_out);
 
 #endif //ARCHITECTURES_M1_PROJECT_TESTER_H
