@@ -41,11 +41,11 @@ bool tester(bool cuda) {
             // TODO: Time evaluation
             double start, finish;
       
-            start = omp_get_wtime();
+            start = get_time();
             result = bellman_ford(g, &g->nodes[0]);
       
             // TODO: Time evaluation
-            finish = omp_get_wtime();
+            finish = get_time();
             printf("Elapsed time: %.6f seconds\n", finish - start);
         }
 
