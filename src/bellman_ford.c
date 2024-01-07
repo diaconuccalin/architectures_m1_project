@@ -8,9 +8,6 @@
 
 
 void initialize_single_source(graph *G, node *s) {
-    // TODO: Experiment with multiple schedule sizes (less browsing through memory if bigger chunk
-    // TODO: If not doing a lot, just cancel it since it runs only once per graph
-    #pragma omp parallel for schedule(static, 8)
     for (int i = 0; i < G->n; i++) {
         G->nodes[i].d = INT_MAX;
         G->nodes[i].pi = NULL;
@@ -23,9 +20,10 @@ void initialize_single_source(graph *G, node *s) {
 void relax(edge *e) {
     node *u = e->source;
     node *v = e->destination;
+    int new_d = u->d + e->weight;
 
-    if (v->d > (u->d + e->weight)) {
-        v->d = u->d + e->weight;
+    if (v->d > new_d) {
+        v->d = new_d;
         v->pi = u->name;
     }
 }
@@ -34,15 +32,16 @@ void relax(edge *e) {
 bool bellman_ford(graph *G, node *s) {
     initialize_single_source(G, s);
 
+    double start = get_time();
     for (int i = 1; i < G->n; i++) {
-        // TODO: Experiment with multiple schedule sizes and procedures
-        // TODO: Try assigning chunk sizes based on graph size (up to m / N_THREADS)
-        #pragma omp parallel for schedule(dynamic, 128)
+        #pragma omp parallel for schedule(dynamic, 1024)
         for (int j = 0; j < G->m; j++) {
             if (G->edges[j].source->d < INT_MAX)
                 relax(&G->edges[j]);
         }
     }
+    double end = get_time();
+    printf("Parallel section: %.6f seconds\n", end - start);
 
     for (int i = 0; i < G->m; i++) {
         edge *current_edge = &G->edges[i];
