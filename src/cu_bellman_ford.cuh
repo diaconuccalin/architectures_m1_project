@@ -5,6 +5,8 @@
 #ifndef ARCHITECTURES_M1_PROJECT_CU_BELLMAN_FORD_CUH
 #define ARCHITECTURES_M1_PROJECT_CU_BELLMAN_FORD_CUH
 
+#include <stdlib.h>
+
 #include "graph_structs.h"
 #include "timing.h"
 #include "utils.h"

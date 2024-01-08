@@ -6,11 +6,8 @@
 #include "tester.h"
 
 
-bool tester(bool cuda) {
+bool tester(bool cuda, char* dir_in, char* dir_ok) {
     // Prepare directory and file variables
-    char dir_in[] = "/home/students/calin.diaconu/parallel_bellman_ford/data/infoarena_processed";
-    char dir_ok[] = "/home/students/calin.diaconu/parallel_bellman_ford/data/infoarena";
-
     DIR *dfd_in;
     struct dirent *dp;
     char file_path_in[500];
@@ -38,14 +35,12 @@ bool tester(bool cuda) {
         if (cuda)
             result = cu_bellman_ford(g, &g->nodes[0]);
         else {
-            // TODO: Time evaluation
             double start, finish;
       
-            start = omp_get_wtime();
+            start = get_time();
             result = bellman_ford(g, &g->nodes[0]);
       
-            // TODO: Time evaluation
-            finish = omp_get_wtime();
+            finish = get_time();
             printf("Elapsed time: %.6f seconds\n", finish - start);
         }
 

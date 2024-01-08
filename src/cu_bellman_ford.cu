@@ -41,8 +41,9 @@ __global__ void cu_relax(
         int destination_index = edges_destinations[index];
 
         if (nodes_ds[source_index] < INT_MAX) {
-            if (nodes_ds[destination_index] > (nodes_ds[source_index] + edges_weights[index])) {
-                nodes_ds[destination_index] = nodes_ds[source_index] + edges_weights[index];
+            int new_d = nodes_ds[source_index] + edges_weights[index];
+            if (nodes_ds[destination_index] > new_d) {
+                nodes_ds[destination_index] = new_d;
                 nodes_pis[destination_index] = source_index;
             }
         }
